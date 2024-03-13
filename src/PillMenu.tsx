@@ -1,4 +1,10 @@
-import { CSSProperties, PropsWithChildren, useState, useRef } from "react";
+import {
+  CSSProperties,
+  PropsWithChildren,
+  useState,
+  useRef,
+  useMemo,
+} from "react";
 import { item, menu, list, indicator } from "./style.css";
 import React from "react";
 
@@ -21,7 +27,14 @@ function PillMenuItem({
   );
 }
 
-function PillMenu({ children }: PropsWithChildren<unknown>) {
+export interface PillMenuProps {
+  indicatorClass?: string;
+}
+
+function PillMenu({
+  children,
+  indicatorClass,
+}: PropsWithChildren<PillMenuProps>) {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [indicatorStyles, setIndicatorStyles] = useState<
     CSSProperties | undefined
@@ -49,9 +62,16 @@ function PillMenu({ children }: PropsWithChildren<unknown>) {
     setIndicatorStyles(undefined);
   };
 
+  const indicatorClasses = useMemo(() => {
+    if (indicatorClass) {
+      return `${indicator} ${indicatorClass}`;
+    }
+    return indicator;
+  }, [indicatorClass]);
+
   return (
     <div className={menu} ref={menuRef}>
-      <div className={indicator} style={indicatorStyles} />
+      <div className={indicatorClasses} style={indicatorStyles} />
       <ul className={list}>
         {React.Children.toArray(children).map((c) =>
           React.cloneElement(c as any, {
